@@ -15,6 +15,7 @@
   </head>
   <body>
     <ul id="messages"></ul>
+    <span id="typing"></span>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
@@ -31,6 +32,23 @@
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
         });
+        var textarea = $('#m');
+        var typingStatus = $('#typing');
+        var lastTypedTime = new Date(0); 
+        var typingDelayMillis = 5000; 
+        function refreshTypingStatus() {
+            if (!textarea.is(':focus') || textarea.val() == '' || new Date().getTime() - lastTypedTime.getTime() > typingDelayMillis) {
+                typingStatus.html('');
+            } else {
+                typingStatus.html('<em>typing...</em>');
+            }
+        }
+        function updateLastTypedTime() {
+            lastTypedTime = new Date();
+        }
+        setInterval(refreshTypingStatus, 100);
+        textarea.keypress(updateLastTypedTime);
+        textarea.blur(refreshTypingStatus);
         });
       </script>
   </body>
